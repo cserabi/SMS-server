@@ -6,8 +6,8 @@ const cors = require('cors');
 const ObjectId = require('mongodb').ObjectId;
 
 const { MongoClient } = require('mongodb');
+const res = require('express/lib/response');
 const port = process.env.PORT || 5000;
-
 
 
 //middleware
@@ -29,6 +29,44 @@ async function run() {
 
     const reviewCollection = database.collection("reviews");
     const ordersCollection = database.collection("currentOrder");
+
+
+    const Schedule_result = client.db("HSTU").collection("addSchedule");
+
+    const CseStuResultCollection = database.collection("CSE");
+
+
+    // POST API
+
+    app.post('/addSchedule', async (req, res) => {
+
+      const updateSchedule = req.body;
+      const result = await Schedule_result.insertOne(updateSchedule);
+      // res.json(result);
+      res.send(result);
+
+    })
+
+    //Get API for schedule
+
+    app.get('/addSchedule', async (req, res) => {
+      // const query = {};
+      const cursor = Schedule_result.find({});
+      const Schedules = await cursor.toArray();
+      res.send(Schedules);
+    });
+
+
+    //Delete API for Schedule
+    app.delete('/addSchedule/:id', async (req, res) => {
+      const id = req.params.id;
+      // 
+      const query = { _id: ObjectId(id) };
+      const result = await Schedule_result.deleteOne(query);
+      console.log('deleting Schedule with id', result);
+      res.json(result);
+
+    })
 
 
 
@@ -83,12 +121,43 @@ async function run() {
 
 
 
+    //orders post api
+    app.post('/orders', async (req, res) => {
+      const orders = req.body;
+      const result = await ordersCollection.insertOne(orders);
+      console.log(result);
+      res.json(result);
+    });
+
+
+
+
+
+
+    //
+
+
+    app.get('/results/:resultID', async (req, res) => {
+      const UserID = req.params.resultID;
+
+      console.log(UserID);
+      const query = { stuid: UserID }
+      const mainUser = await CseStuResultCollection.findOne(query);
+
+
+      res.send(mainUser);
+
+
+    });
+
+
+
     //user(admin) get api
     app.get('/users/:email', async (req, res) => {
-      const email = req.params.email;
+      const UserEmail = req.params.email;
 
       console.log(email);
-      const query = { email: email }
+      const query = { email: UserEmail }
       const user = await buyerCollection.findOne(query);
       let isAdmin = false;
       if (user?.role === 'admin') {
@@ -96,6 +165,12 @@ async function run() {
       }
       res.json({ admin: isAdmin });
     });
+
+
+
+
+
+
 
     //users post api
     app.post('/users', async (req, res) => {
