@@ -27,13 +27,34 @@ async function run() {
     const userCollection = database.collection("mobile-list");
     const buyerCollection = database.collection("user");
 
-    const reviewCollection = database.collection("reviews");
+    const reviewCollection = client.db("HSTU").collection("reviews");
     const ordersCollection = database.collection("currentOrder");
 
 
     const Schedule_result = client.db("HSTU").collection("addSchedule");
+    const Student_result = client.db("HSTU").collection("Results");
 
     const CseStuResultCollection = database.collection("CSE");
+
+
+
+    //POST API for result
+
+    app.post('/addResult', async (req, res) => {
+      const updateResult = req.body;
+      const result = await Student_result.insertOne(updateResult);
+      res.send(result);
+    })
+
+
+    //GET API for results
+
+    app.get('/addResult', async (req, res) => {
+      const totalResult = Student_result.find({});
+      const studentResult = await totalResult.toArray();
+      res.send(studentResult);
+
+    })
 
 
     // POST API
