@@ -9,14 +9,9 @@ const { MongoClient } = require('mongodb');
 const res = require('express/lib/response');
 const port = process.env.PORT || 5000;
 
-
 //middleware
-
 app.use(cors());
-
-
 app.use(express.json());
-
 
 const uri = `mongodb+srv://${process.env.DB_user}:${process.env.DB_password}@cluster0.chwoh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -24,13 +19,8 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("mobile-hunterDB");
-    const userCollection = database.collection("mobile-list");
     const buyerCollection = database.collection("user");
-
     const reviewCollection = client.db("HSTU").collection("reviews");
-    const ordersCollection = database.collection("currentOrder");
-
-
     const Schedule_result = client.db("HSTU").collection("addSchedule");
     const Student_result = client.db("HSTU").collection("Results");
 
